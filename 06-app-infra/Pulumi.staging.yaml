@@ -1,0 +1,7 @@
+config:
+  aws:region: us-west-1
+  lago:clusterStackRef: lago/03-kubernetes-cluster/stage
+  lago:namespace: lago
+  lago:nftCrawlerDeploymentReplicas: 5
+  lago:elastiCacheRedisPort: '6379'
+  lago:elastiCacheRedisUrl: lago-cache-cluster-3b7fb01.hkculh.0001.usw1.cache.amazonaws.com

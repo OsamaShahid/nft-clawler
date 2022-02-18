@@ -1,0 +1,5 @@
+export enum Blockchain {
+  ETHEREUM = 'ETHEREUM',
+  POLYGON = 'POLYGON',
+  BINANCE_SMART_CHAIN = 'BINANCE_SMART_CHAIN',
+}
