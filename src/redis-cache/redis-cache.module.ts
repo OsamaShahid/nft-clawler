@@ -10,7 +10,7 @@ import * as redisStore from 'cache-manager-redis-store';
       inject: [ConfigService],
       useFactory: async () => ({
         store: redisStore,
-        host: "lago-cache-cluster-3b7fb01.hkculh.0001.usw1.cache.amazonaws.com",
+        host: "localhost",
         port: 6379,
         ttl: 7890000,
       }),

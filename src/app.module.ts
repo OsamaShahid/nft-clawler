@@ -12,13 +12,14 @@ import { BullModule } from '@nestjs/bull';
   imports: [
     BullModule.forRoot({
       redis: {
-        host: "lago-cache-cluster-3b7fb01.hkculh.0001.usw1.cache.amazonaws.com",
+        host: "localhost",
         port: 6379,
       },
     }),
     AssetsModule,
     MongooseModule.forRoot(
-      'mongodb+srv://backend:PEiziFz3YjzQNALj@cluster0.hk7rg.mongodb.net/lago?retryWrites=true&w=majority',
+      'mongodb+srv://sa:CvcTyVcPmTI0t0Dn@cluster0.re2y1.mongodb.net/Lago?retryWrites=true&w=majority',
+      //'mongodb+srv://backend:PEiziFz3YjzQNALj@cluster0.hk7rg.mongodb.net/LagoDev?retryWrites=true&w=majority',
       // 'mongodb://localhost:27017/lago?retryWrites=true&w=majority',
     ),
     MarketplacesModule,
