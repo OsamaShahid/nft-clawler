@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { GetAssetFilterDTO } from './dto/get-assets-filter.dto';
 import { AssetRepository } from './repository/asset.repository';
-import { Wallet, Nft } from './schemas/asset.schema';
+import { CrawlerWallet, CrawlerAsset } from './schemas/asset.schema';
 import { Blockchain } from './enums/blockchain.enum';
 import { OpenseaService } from 'src/marketplaces/opensea/opensea.service';
 import { ThegraphService } from 'src/marketplaces/thegraph/thegraph.service';
@@ -19,7 +19,7 @@ export class AssetsService {
     wallet: string,
     userId: string,
     filterDTO: GetAssetFilterDTO,
-  ): Promise<Wallet> {
+  ): Promise<CrawlerWallet> {
     let asset = await this.assetRepository.findAllAssetsByWallet(
       wallet,
       userId,
@@ -33,7 +33,7 @@ export class AssetsService {
     return asset;
   }
 
-  async getWallet(wallet: string, userId: string): Promise<Wallet> {
+  async getWallet(wallet: string, userId: string): Promise<CrawlerWallet> {
     const enumeratedAssetsOnEthereum =
       await this.openseaService.enumerateNFTsByWalletOnEthereum(wallet);
     const enumeratedAssetsOnPolygon =
@@ -62,7 +62,7 @@ export class AssetsService {
     return this.assetRepository.createWallet(newWallet);
   }
 
-  async getNftAsset(tokenId: string, assetContractAddress: string): Promise<Nft> {
+  async getNftAsset(tokenId: string, assetContractAddress: string): Promise<CrawlerAsset> {
 
     cLogger.info(`getNftAsset:: Getting asset with token Id:: ${tokenId} and contract:: ${assetContractAddress} from opensea`);
     const assetOnEthereum =
@@ -87,7 +87,7 @@ export class AssetsService {
     tokenId: string,
     assetContractAddress: string,
     filterDTO: GetNftFilterDTO,
-  ): Promise<Nft> {
+  ): Promise<CrawlerAsset> {
     let asset = await this.assetRepository.findAssetByTokenIdAndAssetContract(
       tokenId,
       assetContractAddress,

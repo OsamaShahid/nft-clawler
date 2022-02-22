@@ -3,22 +3,22 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Document, Model } from 'mongoose';
 import { CreateAssetDTO } from '../dto/create-asset.dto';
 import { GetAssetFilterDTO } from '../dto/get-assets-filter.dto';
-import { Wallet, WalletDocument, Nft, NftDocument } from '../schemas/asset.schema';
+import { CrawlerWallet, WalletDocument, CrawlerAsset, NftDocument } from '../schemas/asset.schema';
 import { RedisCacheService } from '../../redis-cache/redis-cache.service';
 import { GetNftFilterDTO } from '../dto/get-nft-filter.dto';
 
 @Injectable()
 export class AssetRepository {
   constructor(
-    @InjectModel(Wallet.name) private walletModel: Model<WalletDocument>,
-    @InjectModel(Nft.name) private NftModel: Model<NftDocument>,
+    @InjectModel(CrawlerWallet.name) private walletModel: Model<WalletDocument>,
+    @InjectModel(CrawlerAsset.name) private assetModel: Model<NftDocument>,
     private redisCacheService: RedisCacheService,
   ) {}
 
-  async createWallet(createAssetDTO: CreateAssetDTO): Promise<Wallet> {
+  async createWallet(createAssetDTO: CreateAssetDTO): Promise<CrawlerWallet> {
     // const { startDate, nftCollections } = createAssetDTO;
 
-    let wallet: Wallet | (Wallet & Document<any, any, any> & { _id: any; }) | PromiseLike<Wallet>;
+    let wallet: CrawlerWallet | (CrawlerWallet & Document<any, any, any> & { _id: any; }) | PromiseLike<CrawlerWallet>;
     try {
       const query = { _id: createAssetDTO._id };
       const update = { $set: { ...createAssetDTO, }};
@@ -37,7 +37,7 @@ export class AssetRepository {
     wallet: string,
     userId: string,
     filterDTO: GetAssetFilterDTO,
-  ): Promise<Wallet> {
+  ): Promise<CrawlerWallet> {
     try {
       return await this.loadWalletFromCache(wallet);
     } catch (error) {
@@ -46,7 +46,7 @@ export class AssetRepository {
     }
   }
 
-  async loadWalletFromCache(wallet: string): Promise<Wallet> {
+  async loadWalletFromCache(wallet: string): Promise<CrawlerWallet> {
     try {
       return await this.redisCacheService.get(wallet);
     } catch (error) {
@@ -54,7 +54,7 @@ export class AssetRepository {
     }
   }
 
-  async loadNftAssetFromCache(tokenId: string): Promise<Nft> {
+  async loadNftAssetFromCache(tokenId: string): Promise<CrawlerAsset> {
     try {
       return await this.redisCacheService.get(tokenId);
     } catch (error) {
@@ -66,23 +66,23 @@ export class AssetRepository {
     tokenId: string,
     assetContractAddress: string,
     filterDTO: GetNftFilterDTO,
-  ): Promise<Nft> {
+  ): Promise<CrawlerAsset> {
     try {
       return await this.loadNftAssetFromCache(tokenId);
     } catch (error) {
       const {} = filterDTO;
-      return this.NftModel.findOne({ _id: tokenId }).exec();
+      return this.assetModel.findOne({ _id: tokenId }).exec();
     }
   }
 
-  async createNftAsset(createAssetDTO: any): Promise<Nft> {
+  async createNftAsset(createAssetDTO: any): Promise<CrawlerAsset> {
 
-    let asset: Nft | (Nft & Document<any, any, any> & { _id: any; }) | PromiseLike<Nft>;
+    let asset: CrawlerAsset | (CrawlerAsset & Document<any, any, any> & { _id: any; }) | PromiseLike<CrawlerAsset>;
     try {
       const query = { _id: createAssetDTO._id };
       const update = { $set: { ...createAssetDTO, }};
       const options = { upsert: true, new: true };
-      asset = await this.NftModel.findOneAndUpdate(query, update, options);
+      asset = await this.assetModel.findOneAndUpdate(query, update, options);
 
     } catch (e: unknown) {
       console.log(e);

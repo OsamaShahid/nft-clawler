@@ -15,14 +15,14 @@ import { Queue } from 'bull';
 export class AssetsController {
   constructor(
     private assetsService: AssetsService,
-    @InjectQueue('wallet') private walletQueue: Queue,
-    @InjectQueue('nft') private nftQueue: Queue,
+    @InjectQueue('crawlerwallet') private crawlerWalletQueue: Queue,
+    @InjectQueue('crawlerasset') private crawlerAssetQueue: Queue,
   ) {}
 
   WALLET_CRON_DEFINITION = '*/30 * * * *';
   NFT_ASSET_CRON_DEFINITION = '*/30 * * * *';
-  WALLET_QUEUE_NAME = 'wallet';
-  NFT_ASSET_QUEUE_NAME = 'nft'
+  WALLET_QUEUE_NAME = 'crawlerwallet';
+  NFT_ASSET_QUEUE_NAME = 'crawlerasset'
 
   @Get('/:wallet/:userId')
   async findAllAssetsByWallet(
@@ -30,7 +30,7 @@ export class AssetsController {
     @Param('userId') userId: string,
     @Query() filterDTO: GetAssetFilterDTO,
   ) {
-    this.walletQueue.add(
+    this.crawlerWalletQueue.add(
       this.WALLET_QUEUE_NAME,
       {
         wallet: wallet,
@@ -47,12 +47,12 @@ export class AssetsController {
     @Param('wallet') wallet: string,
     @Param('userId') userId: string,
   ) {
-    const jobs = await this.walletQueue.getRepeatableJobs();
+    const jobs = await this.crawlerWalletQueue.getRepeatableJobs();
     const containsJobForWallet = jobs.some(
       (e) => e.id.normalize() === wallet.normalize(),
     );
     if (containsJobForWallet) {
-      this.walletQueue.removeRepeatableByKey(
+      this.crawlerWalletQueue.removeRepeatableByKey(
         `${this.WALLET_QUEUE_NAME}:${wallet}:::${this.WALLET_CRON_DEFINITION}`,
       );
       return { statusCode: 200, message: 'Success' };
@@ -67,7 +67,7 @@ export class AssetsController {
     @Param('asset_contract_address') assetContractAddress: string,
     @Query() filterDTO: GetNftFilterDTO,
   ) {
-    this.nftQueue.add(
+    this.crawlerAssetQueue.add(
       this.NFT_ASSET_QUEUE_NAME,
       {
         tokenId,

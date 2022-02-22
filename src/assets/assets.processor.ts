@@ -11,13 +11,13 @@ import {
 
 import { cLogger } from 'src/helpers';
 
-@Processor('wallet')
-export class WalletQueueProcessor {
+@Processor('crawlerwallet')
+export class CrawlerWalletQueueProcessor {
   constructor(private assetsService: AssetsService) {}
 
-  @Process('wallet')
-  handleWallet(job: Job) {
-    cLogger.info(`handleWallet:: Handling wallet job ${job.id} of type ${job.name} with data `, job.data);
+  @Process('crawlerwallet')
+  handleCrawlerwallet(job: Job) {
+    cLogger.info(`handleCrawlerwallet:: Handling crawler wallet job ${job.id} of type ${job.name} with data `, job.data);
     return this.assetsService.getWallet(job.data.wallet, job.data.userId);
   }
 
@@ -50,13 +50,13 @@ export class WalletQueueProcessor {
   }
 }
 
-@Processor('nft')
-export class NftQueueProcessor {
+@Processor('crawlerasset')
+export class CrawlerAssetQueueProcessor {
   constructor(private assetsService: AssetsService) {}
 
-  @Process('nft')
-  handleNft(job: Job) {
-    cLogger.info(`handleNft:: Handling Nft job ${job.id} of type ${job.name} with data `, job.data);
+  @Process('crawlerasset')
+  handleCrawlerasset(job: Job) {
+    cLogger.info(`handleCrawlerasset:: Handling crawler asset job ${job.id} of type ${job.name} with data `, job.data);
     return this.assetsService.getNftAsset(job.data.tokenId, job.data.assetContractAddress);
   }
 

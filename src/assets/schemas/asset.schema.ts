@@ -1,8 +1,8 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import * as mongoose from 'mongoose';
 
-export type WalletDocument = Wallet & mongoose.Document;
-export type NftDocument = Nft & mongoose.Document;
+export type WalletDocument = CrawlerWallet & mongoose.Document;
+export type NftDocument = CrawlerAsset & mongoose.Document;
 
 export class Blockchain extends mongoose.Document {
   @Prop()
@@ -27,7 +27,7 @@ export class Blockchains extends mongoose.Document {
 }
 
 @Schema({ timestamps: true })
-export class Wallet {
+export class CrawlerWallet {
   @Prop()
   _id: string;
 
@@ -39,7 +39,7 @@ export class Wallet {
 }
 
 @Schema({ timestamps: true })
-export class Nft {
+export class CrawlerAsset {
   @Prop()
   _id: string;
 
@@ -59,5 +59,5 @@ export class Nft {
   assets?: any;
 }
 
-export const WalletSchema = SchemaFactory.createForClass(Wallet);
-export const NftSchema = SchemaFactory.createForClass(Nft);
+export const WalletSchema = SchemaFactory.createForClass(CrawlerWallet);
+export const NftSchema = SchemaFactory.createForClass(CrawlerAsset);

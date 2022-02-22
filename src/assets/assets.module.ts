@@ -4,26 +4,26 @@ import { AssetsService } from './assets.service';
 import { HttpModule } from '@nestjs/axios';
 import { AssetRepository } from './repository/asset.repository';
 import { MongooseModule } from '@nestjs/mongoose';
-import { Wallet, WalletSchema, Nft, NftSchema } from './schemas/asset.schema';
+import { CrawlerWallet, WalletSchema, CrawlerAsset, NftSchema } from './schemas/asset.schema';
 import { MarketplacesModule } from 'src/marketplaces/marketplaces.module';
 import { RedisCacheModule } from '../redis-cache/redis-cache.module';
 import { BullModule } from '@nestjs/bull';
-import { WalletQueueProcessor, NftQueueProcessor } from './assets.processor';
+import { CrawlerWalletQueueProcessor, CrawlerAssetQueueProcessor } from './assets.processor';
 
 @Module({
   imports: [
     HttpModule,
     MarketplacesModule,
-    MongooseModule.forFeature([{ name: Wallet.name, schema: WalletSchema }, { name: Nft.name, schema: NftSchema }]),
+    MongooseModule.forFeature([{ name: CrawlerWallet.name, schema: WalletSchema }, { name: CrawlerAsset.name, schema: NftSchema }]),
     RedisCacheModule,
     BullModule.registerQueue({
-      name: 'wallet',
+      name: 'crawlerwallet',
     }, {
-      name: 'nft',
+      name: 'crawlerasset',
     }),
   ],
   controllers: [AssetsController],
-  providers: [AssetsService, AssetRepository, WalletQueueProcessor, NftQueueProcessor],
+  providers: [AssetsService, AssetRepository, CrawlerWalletQueueProcessor, CrawlerAssetQueueProcessor],
   exports: [AssetsService],
 })
 export class AssetsModule {}
