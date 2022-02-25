@@ -30,35 +30,46 @@ export class AssetsService {
       asset = await this.getWallet(wallet, userId);
     }
 
+    cLogger.success(
+      `findAllAssetsByWallet:: Successfully fulfilled request to find assets from wallet:: ${wallet}`
+    );
     return asset;
   }
 
   async getWallet(wallet: string, userId: string): Promise<CrawlerWallet> {
+    cLogger.info(`getWallet:: No wallet:: ${wallet} data found in either redis or in database, getting wallet data from opensea service`);
     const enumeratedAssetsOnEthereum =
       await this.openseaService.enumerateNFTsByWalletOnEthereum(wallet);
-    const enumeratedAssetsOnPolygon =
-      await this.thegraphService.enumerateNFTsByWalletOnPolygon(wallet);
+      const enumeratedTransactionsOnEthereum =
+        await this.openseaService.enumerateTransactionsByWalletOnEthereum(
+          wallet
+        );
+      const enumeratedAssetsOnPolygon =
+        await this.thegraphService.enumerateNFTsByWalletOnPolygon(wallet);
 
-    console.log('enumeratedAssetsOnPolygon: ', enumeratedAssetsOnPolygon);
+      console.log("enumeratedAssetsOnPolygon: ", enumeratedAssetsOnPolygon);
 
-    const currentISODate = new Date().toISOString();
+      const currentISODate = new Date().toISOString();
 
-    const newWallet = {
-      _id: wallet,
-      userId: userId,
-      blockchains: {
-        ethereum: {
-          expire: currentISODate,
-          blockchain: Blockchain.ETHEREUM,
-          assets: enumeratedAssetsOnEthereum,
+      const newWallet = {
+        _id: wallet,
+        userId: userId,
+        blockchains: {
+          ethereum: {
+            expire: currentISODate,
+            blockchain: Blockchain.ETHEREUM,
+            assets: enumeratedAssetsOnEthereum,
+            events: enumeratedTransactionsOnEthereum,
+          },
+          polygon: {
+            expire: currentISODate,
+            blockchain: Blockchain.POLYGON,
+            assets: enumeratedAssetsOnPolygon,
+          },
         },
-        polygon: {
-          expire: currentISODate,
-          blockchain: Blockchain.POLYGON,
-          assets: enumeratedAssetsOnPolygon,
-        },
-      },
-    };
+      };
+
+      cLogger.success(`getWallet:: Successfuly fetched wallet:: ${wallet} data from opensea service`);
     return this.assetRepository.createWallet(newWallet);
   }
 
